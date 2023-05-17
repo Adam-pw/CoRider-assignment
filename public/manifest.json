@@ -1,0 +1,8 @@
+{
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "name": "CoRider Assignment",
+  "short_name": "Assignment",
+  "description": "Assignment test app"
+}

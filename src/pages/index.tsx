@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+
   const [data, setData] = useState<any>([]);
   const [info, SetInfo] = useState<any>();
   const [onClick, setClick] = useState<any>(false);
   const [number, setNumber] = useState(0);
-  const [scrollPosition, setSrollPosition] = useState("");
 
   const divRef = useRef<any>(null);
 
@@ -24,31 +24,21 @@ export default function Home() {
       .then((res) => {
         setData([...res.chats, ...data]);
         SetInfo(res);
-        // console.log(res);
         console.log(res);
-        divRef.current.scrollIntoView({ behavior: "instant", block: "center" });
       })
       .catch((err) => {
         console.log(err);
+        console.log("error")
       })
-      .then(() => executeScroll());
-    // const handleScroll = (event: any) => {
-    // const position = window.pageYOffset;
-    // var temp = 0;
-    // if (position - temp > 0) {
-    //   setSrollPosition("down");
-    // } else if (position - temp < 0) {
-    //   setSrollPosition("up");
-    // }
-    // setNumber(number + 1);
-    // temp = position;
-    // console.log(scrollPosition);
-    // };
 
-    // window.addEventListener("scroll", handleScroll, { passive: true });
-    // return () => {
-    //   window.removeEventListener("scroll", handleScroll);
-    // };
+    const handleScroll = (event: any) => {
+      setNumber(number + 1);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, [number]);
 
   return (

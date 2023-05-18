@@ -1,11 +1,10 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import { useEffect, useRef, useState } from "react";
+import { EffectCallback, useEffect, useRef, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-
   const [data, setData] = useState<any>([]);
   const [info, SetInfo] = useState<any>();
   const [onClick, setClick] = useState<any>(false);
@@ -20,18 +19,17 @@ export default function Home() {
 
   useEffect(() => {
     fetch(`https://3.111.128.67/assignment/chat?page=${number}`)
-      .then((res) => res.json())
-      .then((res) => {
+      .then((res: any) => res.json())
+      .then((res: any) => {
         setData([...res.chats, ...data]);
         SetInfo(res);
         console.log(res);
       })
       .catch((err) => {
         console.log(err);
-        console.log("error")
-      })
+      });
 
-    const handleScroll = (event: any) => {
+    const handleScroll = () => {
       setNumber(number + 1);
     };
 

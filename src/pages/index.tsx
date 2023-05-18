@@ -15,7 +15,9 @@ export default function Home() {
       .then((res: any) => res.json())
       .then((res: any) => {
         setData([...res.chats, ...data]);
-        SetInfo(res);
+        if (!info) {
+          SetInfo(res);
+        }
       })
       .catch((err) => {
         console.log(err);

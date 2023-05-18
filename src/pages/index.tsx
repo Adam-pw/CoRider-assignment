@@ -10,20 +10,12 @@ export default function Home() {
   const [onClick, setClick] = useState<any>(false);
   const [number, setNumber] = useState(0);
 
-  const divRef = useRef<any>(null);
-
-  const executeScroll = () => {
-    console.log("hello");
-    divRef.current.scrollIntoView({ behavior: "instant", block: "center" });
-  };
-
   useEffect(() => {
     fetch(`https://3.111.128.67/assignment/chat?page=${number}`)
       .then((res: any) => res.json())
       .then((res: any) => {
         setData([...res.chats, ...data]);
         SetInfo(res);
-        console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -33,7 +25,7 @@ export default function Home() {
       setNumber(number + 1);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -102,7 +94,7 @@ export default function Home() {
                 </>
               );
             })}
-            <div className="w-1 h-1" ref={divRef}></div>
+            <div className="w-1 h-1"></div>
           </div>
         </div>
         <div className="bg-[#FAF9F4] fixed bottom-0 flex w-full justify-between items-center">

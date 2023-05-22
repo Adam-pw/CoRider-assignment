@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import { EffectCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,6 +10,10 @@ export default function Home() {
   const [onClick, setClick] = useState<any>(false);
   const [number, setNumber] = useState(0);
 
+  const lastChatRef = useRef(null);
+  const chatContainerRef = useRef(null);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+
   useEffect(() => {
     fetch(`https://3.111.128.67/assignment/chat?page=${number}`)
       .then((res: any) => res.json())
@@ -18,25 +22,46 @@ export default function Home() {
         if (!info) {
           SetInfo(res);
         }
+        console.log(res);
       })
       .catch((err) => {
         console.log(err);
+      })
+      .then(() => {
+        if (shouldScrollToBottom && lastChatRef.current) {
+          const lastChatElement = lastChatRef.current;
+          lastChatElement?.scrollIntoView({
+            behavior: "instant",
+            block: "end",
+          });
+          setShouldScrollToBottom(false);
+        }
+      })
+      .then(() => {
+        const handleScroll = () => {
+          const scrollHeight = document.documentElement.scrollHeight;
+          const scrollTop = document.documentElement.scrollTop;
+          const clientHeight = document.documentElement.clientHeight;
+          console.log(scrollTop);
+          if (scrollTop - scrollHeight === -clientHeight) {
+            setNumber((prevPage) => prevPage + 1);
+          }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+          window.removeEventListener("scroll", handleScroll);
+        };
       });
-
-    const handleScroll = () => {
-      setNumber(number + 1);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
   }, [number]);
+
+  const inputDate = new Date(data[0]?.time);
+  const options: any = { day: "numeric", month: "long", year: "numeric" };
+  const formattedDate = inputDate.toLocaleDateString("en-US", options);
 
   return (
     <>
       <div className="flex">
-        <div className="w-full fixed">
+        <div className="w-full fixed z-10">
           <div className="bg-[#FAF9F4] p-4 w-full">
             <div className="flex justify-between items-center">
               <div className="flex gap-4 items-center">
@@ -70,33 +95,54 @@ export default function Home() {
           <hr className="w-full border-[#E5E5E0]"></hr>
         </div>
         <div className=" bg-[#FAF9F4] p-4 flex flex-col justify-end w-full mt-[124px] mb-[54px]">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mt-4">
             <div className="h-[1px] bg-[#B7B7B7] w-[116px]"></div>
-            <div className="text-[#B7B7B7] text-xs">12 JAN, 2023</div>
+            <div className="text-[#B7B7B7] text-xs">{formattedDate}</div>
             <div className="w-[116px] h-[1px] bg-[#B7B7B7]"></div>
           </div>
-          <div className="flex flex-col gap-4 overflow-y-scroll">
-            {data?.map((value: any, index: any) => {
-              return (
-                <>
-                  <div className="flex gap-2 mt-4" id="11">
-                    <div className="w-[26px] h-[26px]">
-                      <Image
-                        className="rounded-full w-[26px] h-[26px]"
-                        src={value.sender.image}
-                        alt=""
-                        height={26}
-                        width={26}
-                      />
+          <div
+            className="flex flex-col-reverse gap-4 overflow-y-scroll relative"
+            ref={chatContainerRef}
+          >
+              {data?.map((value: any, index: any) => {
+                return (
+                  <>
+                    <div
+                      className="flex gap-2 mt-4"
+                      id="11"
+                      key={index}
+                      ref={index === value?.length - 1 ? lastChatRef : null}
+                    >
+                      <div className="w-[26px] h-[26px]">
+                        <Image
+                          className="rounded-full w-[26px] h-[26px]"
+                          src={value?.sender.image}
+                          alt=""
+                          height={26}
+                          width={26}
+                        />
+                        {value?.sender.is_kyc_verified && (
+                          <>
+                            <div className="absolute ">
+                              <Image
+                                className="rounded-full w-[12px] h-[12px] -translate-y-2 translate-x-4"
+                                src="/images/verified.svg"
+                                height={8}
+                                alt=""
+                                width={8}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      <div className="bg-[#FFFFFF] px-4 py-2 shadow-[0_4px_8px_1px_rgba(0,0,0,0.08)] text-[#606060] rounded-r-xl rounded-b-xl rounde-l-xl w-[287px]">
+                        {value?.message}
+                      </div>
                     </div>
-                    <div className="bg-[#FFFFFF] px-4 py-2 shadow-[0_4px_8px_1px_rgba(0,0,0,0.08)] text-[#606060] rounded-r-xl rounded-b-xl rounde-l-xl w-[287px]">
-                      {value.message}
-                    </div>
-                  </div>
-                </>
-              );
-            })}
-            <div className="w-1 h-1"></div>
+                  </>
+                );
+              })}
+            <div className="h-2 w-2"></div>
           </div>
         </div>
         <div className="bg-[#FAF9F4] fixed bottom-0 flex w-full justify-between items-center">

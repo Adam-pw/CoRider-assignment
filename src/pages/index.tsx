@@ -26,33 +26,28 @@ export default function Home() {
       })
       .catch((err) => {
         console.log(err);
-      })
-      .then(() => {
-        if (shouldScrollToBottom && lastChatRef.current) {
-          const lastChatElement = lastChatRef.current;
-          lastChatElement?.scrollIntoView({
-            behavior: "instant",
-            block: "end",
-          });
-          setShouldScrollToBottom(false);
-        }
-      })
-      .then(() => {
-        const handleScroll = () => {
-          const scrollHeight = document.documentElement.scrollHeight;
-          const scrollTop = document.documentElement.scrollTop;
-          const clientHeight = document.documentElement.clientHeight;
-          console.log(scrollTop);
-          if (scrollTop - scrollHeight === -clientHeight) {
-            setNumber((prevPage) => prevPage + 1);
-          }
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-          window.removeEventListener("scroll", handleScroll);
-        };
       });
+    const handleScroll = () => {
+      const divElement = chatContainerRef.current;
+      if (divElement.scrollTop === 0) {
+        setNumber((prevPage) => prevPage + 1);
+      }
+    };
+    chatContainerRef.current.addEventListener("scroll", handleScroll);
+    return () => {
+      chatContainerRef.current.removeEventListener("scroll", handleScroll);
+    };
   }, [number]);
+
+  useEffect(() => {
+    if (shouldScrollToBottom && lastChatRef.current) {
+      const lastChatElement = lastChatRef.current;
+      lastChatElement?.scrollIntoView({
+        behavior: "instant",
+      });
+      setShouldScrollToBottom(false);
+    }
+  }, []);
 
   const inputDate = new Date(data[0]?.time);
   const options: any = { day: "numeric", month: "long", year: "numeric" };
@@ -94,55 +89,54 @@ export default function Home() {
           </div>
           <hr className="w-full border-[#E5E5E0]"></hr>
         </div>
-        <div className=" bg-[#FAF9F4] p-4 flex flex-col justify-end w-full mt-[124px] mb-[54px]">
+        <div
+          className=" bg-[#FAF9F4] p-4 w-full mt-[124px] mb-[54px] h-[710px] overflow-y-auto"
+          ref={chatContainerRef}
+        >
           <div className="flex justify-between items-center mt-4">
             <div className="h-[1px] bg-[#B7B7B7] w-[116px]"></div>
             <div className="text-[#B7B7B7] text-xs">{formattedDate}</div>
             <div className="w-[116px] h-[1px] bg-[#B7B7B7]"></div>
           </div>
-          <div
-            className="flex flex-col-reverse gap-4 overflow-y-scroll relative"
-            ref={chatContainerRef}
-          >
-              {data?.map((value: any, index: any) => {
-                return (
-                  <>
-                    <div
-                      className="flex gap-2 mt-4"
-                      id="11"
-                      key={index}
-                      ref={index === value?.length - 1 ? lastChatRef : null}
-                    >
-                      <div className="w-[26px] h-[26px]">
-                        <Image
-                          className="rounded-full w-[26px] h-[26px]"
-                          src={value?.sender.image}
-                          alt=""
-                          height={26}
-                          width={26}
-                        />
-                        {value?.sender.is_kyc_verified && (
-                          <>
-                            <div className="absolute ">
-                              <Image
-                                className="rounded-full w-[12px] h-[12px] -translate-y-2 translate-x-4"
-                                src="/images/verified.svg"
-                                height={8}
-                                alt=""
-                                width={8}
-                              />
-                            </div>
-                          </>
-                        )}
-                      </div>
-                      <div className="bg-[#FFFFFF] px-4 py-2 shadow-[0_4px_8px_1px_rgba(0,0,0,0.08)] text-[#606060] rounded-r-xl rounded-b-xl rounde-l-xl w-[287px]">
-                        {value?.message}
-                      </div>
+          <div className="flex flex-col-reverse gap-4 relative">
+            {data?.map((value: any, index: any) => {
+              return (
+                <>
+                  <div
+                    className="flex gap-2 mt-4"
+                    key={index}
+                    ref={index === 9 ? lastChatRef : null}
+                  >
+                    
+                    <div className="w-[26px] h-[26px]">
+                      <Image
+                        className="rounded-full w-[26px] h-[26px]"
+                        src={value?.sender.image}
+                        alt=""
+                        height={26}
+                        width={26}
+                      />
+                      {value?.sender.is_kyc_verified && (
+                        <>
+                          <div className="absolute ">
+                            <Image
+                              className="rounded-full w-[12px] h-[12px] -translate-y-2 translate-x-4"
+                              src="/images/verified.svg"
+                              height={8}
+                              alt=""
+                              width={8}
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
-                  </>
-                );
-              })}
-            <div className="h-2 w-2"></div>
+                    <div className="bg-[#FFFFFF] px-4 py-2 shadow-[0_4px_8px_1px_rgba(0,0,0,0.08)] text-[#606060] rounded-r-xl rounded-b-xl rounde-l-xl w-[287px]">
+                      {value?.message}
+                    </div>
+                  </div>
+                </>
+              );
+            })}
           </div>
         </div>
         <div className="bg-[#FAF9F4] fixed bottom-0 flex w-full justify-between items-center">

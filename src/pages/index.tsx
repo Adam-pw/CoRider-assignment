@@ -44,13 +44,17 @@ export default function Home() {
     };
   }, [number]);
 
-  useEffect(() => {
+  const habdleScrollInto = () => {
     if (shouldScrollToBottom && lastChatRef.current) {
       (lastChatRef.current as any).scrollIntoView({
         behavior: "instant",
       });
       setShouldScrollToBottom(false);
     }
+  };
+
+  useEffect(() => {
+    habdleScrollInto();
   }, []);
 
   const inputDate = new Date(data[0]?.time);

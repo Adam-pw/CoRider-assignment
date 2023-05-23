@@ -29,20 +29,22 @@ export default function Home() {
       });
     const handleScroll = () => {
       const divElement = chatContainerRef.current;
-      if (divElement.scrollTop === 0) {
-        setNumber((prevPage) => prevPage + 1);
+      if (divElement) {
+        if ((divElement as any).scrollTop === 0) {
+          setNumber((prevPage) => prevPage + 1);
+        }
       }
     };
-    chatContainerRef.current.addEventListener("scroll", handleScroll);
+    (chatContainerRef.current as any).addEventListener("scroll", handleScroll);
     return () => {
-      chatContainerRef.current.removeEventListener("scroll", handleScroll);
+      (chatContainerRef.current as any).removeEventListener("scroll", handleScroll);
     };
   }, [number]);
 
   useEffect(() => {
     if (shouldScrollToBottom && lastChatRef.current) {
       const lastChatElement = lastChatRef.current;
-      lastChatElement?.scrollIntoView({
+      (lastChatElement as any).scrollIntoView({
         behavior: "instant",
       });
       setShouldScrollToBottom(false);
@@ -107,7 +109,6 @@ export default function Home() {
                     key={index}
                     ref={index === 9 ? lastChatRef : null}
                   >
-                    
                     <div className="w-[26px] h-[26px]">
                       <Image
                         className="rounded-full w-[26px] h-[26px]"

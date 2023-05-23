@@ -37,14 +37,16 @@ export default function Home() {
     };
     (chatContainerRef.current as any).addEventListener("scroll", handleScroll);
     return () => {
-      (chatContainerRef.current as any).removeEventListener("scroll", handleScroll);
+      (chatContainerRef.current as any).removeEventListener(
+        "scroll",
+        handleScroll
+      );
     };
   }, [number]);
 
   useEffect(() => {
     if (shouldScrollToBottom && lastChatRef.current) {
-      const lastChatElement = lastChatRef.current;
-      (lastChatElement as any).scrollIntoView({
+      (lastChatRef.current as any).scrollIntoView({
         behavior: "instant",
       });
       setShouldScrollToBottom(false);
@@ -95,49 +97,64 @@ export default function Home() {
           className=" bg-[#FAF9F4] p-4 w-full mt-[124px] mb-[54px] h-[710px] overflow-y-auto"
           ref={chatContainerRef}
         >
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center my-4">
             <div className="h-[1px] bg-[#B7B7B7] w-[116px]"></div>
             <div className="text-[#B7B7B7] text-xs">{formattedDate}</div>
             <div className="w-[116px] h-[1px] bg-[#B7B7B7]"></div>
           </div>
-          <div className="flex flex-col-reverse gap-4 relative">
+          <div className="flex flex-col gap-4 relative">
             {data?.map((value: any, index: any) => {
               return (
                 <>
-                  <div
-                    className="flex gap-2 mt-4"
-                    key={index}
-                    ref={index === 9 ? lastChatRef : null}
-                  >
-                    <div className="w-[26px] h-[26px]">
-                      <Image
-                        className="rounded-full w-[26px] h-[26px]"
-                        src={value?.sender.image}
-                        alt=""
-                        height={26}
-                        width={26}
-                      />
-                      {value?.sender.is_kyc_verified && (
-                        <>
-                          <div className="absolute ">
-                            <Image
-                              className="rounded-full w-[12px] h-[12px] -translate-y-2 translate-x-4"
-                              src="/images/verified.svg"
-                              height={8}
-                              alt=""
-                              width={8}
-                            />
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <div className="bg-[#FFFFFF] px-4 py-2 shadow-[0_4px_8px_1px_rgba(0,0,0,0.08)] text-[#606060] rounded-r-xl rounded-b-xl rounde-l-xl w-[287px]">
-                      {value?.message}
-                    </div>
-                  </div>
+                  {value.sender.self === true ? (
+                    <>
+                      <div
+                        className="px-4 py-2 self-end bg-[#1C63D5] text-white w-[287px] shadow-[0_4px_8px_1px_rgba(0,0,0,0.08)] rounded-tr-xl rounded-tl-xl rounded-bl-xl"
+                        key={index}
+                        // ref={index === 9 ? lastChatRef : null}
+                      >
+                        {value?.message}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div
+                        className="flex gap-2 mt-4"
+                        key={index}
+                        // ref={index === 9 ? lastChatRef : null}
+                      >
+                        <div className="w-[26px] h-[26px]">
+                          <Image
+                            className="rounded-full w-[26px] h-[26px]"
+                            src={value?.sender.image}
+                            alt=""
+                            height={26}
+                            width={26}
+                          />
+                          {value?.sender.is_kyc_verified && (
+                            <>
+                              <div className="absolute ">
+                                <Image
+                                  className="rounded-full w-[12px] h-[12px] -translate-y-2 translate-x-4"
+                                  src="/images/verified.svg"
+                                  height={8}
+                                  alt=""
+                                  width={8}
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        <div className="bg-[#FFFFFF] px-4 py-2 shadow-[0_4px_8px_1px_rgba(0,0,0,0.08)] text-[#606060] rounded-r-xl rounded-b-xl rounde-l-xl w-[287px]">
+                          {value?.message}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </>
               );
             })}
+            <div className="" ref={lastChatRef}></div>
           </div>
         </div>
         <div className="bg-[#FAF9F4] fixed bottom-0 flex w-full justify-between items-center">
